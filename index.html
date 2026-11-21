@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta property="og:title" content="bunker_ · the panic button for solana">
+<meta property="og:description" content="sol dumps, you're in usdc. sol bounces, you're back in. one rule, your keys.">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="favicon.png">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>bunker_</title>
+<meta name="description" content="sol dumps, you're in usdc. sol bounces, you're back in. one rule, onchain on solana.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter+Tight:wght@800&display=swap" rel="stylesheet">
+<style>
+  :root { --bg: #ebe5d8; --ink: #151515; --mute: #8b8474; --line: #d3cbb9; --ascii: #d2c9b5; --red: #c2361f; }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { background: var(--bg); color: var(--ink); }
+  body { font: 15px/1.5 'JetBrains Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+  a { color: inherit; text-decoration: none; }
+  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+
+  /* landing: one screen */
+  .land { position: relative; min-height: 100svh; display: flex; flex-direction: column; overflow: hidden; }
+  #ascii { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .tick { position: relative; white-space: nowrap; overflow: hidden; font-size: 14px; color: var(--mute); padding: 10px 0; }
+  .tick span { display: inline-block; animation: tk 50s linear infinite; }
+  @keyframes tk { to { transform: translateX(-50%); } }
+  .center { position: relative; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 16px 50px; }
+
+  .shot { width: min(560px, 92vw); background: #f6f2ea; border: 1px solid var(--line); border-radius: 6px; box-shadow: 0 18px 40px -18px rgba(60,45,20,.35); font-size: 11px; overflow: hidden; }
+  .shot .bar { display: flex; gap: 14px; align-items: center; padding: 7px 10px; border-bottom: 1px solid var(--line); color: var(--mute); }
+  .shot .bar b { color: var(--ink); }
+  .shot canvas { display: block; width: 100%; height: 150px; }
+  .shot .foot { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line); }
+  .shot .foot div { padding: 6px 10px; border-right: 1px solid var(--line); color: var(--mute); }
+  .shot .foot div:last-child { border-right: 0; }
+  .shot .foot b { color: var(--ink); margin-left: 4px; }
+
+  .word { font: 800 clamp(64px, 11vw, 132px)/1 'Inter Tight', sans-serif; letter-spacing: -.055em; margin-top: 40px; position: relative; }
+  .word i { display: inline-block; width: .42em; height: .1em; margin-left: .04em; background: var(--red); vertical-align: baseline; animation: blink 1.1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  .lines { margin-top: 26px; font-size: clamp(15px, 1.6vw, 18px); line-height: 1.7; }
+  .lines div:last-child::before { content: '_ '; color: var(--red); font-weight: 700; }
+  .lines .r { color: var(--red); }
+
+  .shot .tg { display: flex; border: 1px solid var(--line); }
+  .shot .tg button { padding: 2px 8px; font-size: 11px; color: var(--mute); }
+  .shot .tg button.on { background: var(--ink); color: var(--bg); }
+  .live-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--red); margin-right: 5px; animation: blink 1.1s steps(1) infinite; vertical-align: 1px; }
+  .up { color: #2f7d4f; }
+  .btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: min(340px, 88vw); margin-top: 34px; }
+  .btns .main { grid-column: 1 / -1; }
+  .btn { display: block; text-align: center; padding: 13px; border: 1px solid var(--line); background: rgba(235,229,216,.85); letter-spacing: .25em; font-size: 14px; transition: background .15s, color .15s; }
+  .btn:hover { background: var(--ink); color: var(--bg); }
+  .btn.main { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .btn.main:hover { background: var(--red); color: var(--bg); border-color: var(--red); }
+  .ca { margin-top: 14px; font-size: 12px; color: var(--mute); cursor: pointer; }
+  .ca:hover { color: var(--ink); }
+
+  /* app */
+  .app { border-top: 1px solid var(--line); background: #f3efe6; }
+  .ahead { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; padding: 12px 18px; border-bottom: 1px solid var(--line); font-size: 13px; color: var(--mute); }
+  .ahead b { color: var(--ink); font-weight: 700; }
+  .ahead .px { font-size: 20px; color: var(--ink); font-weight: 700; }
+  .sp { flex: 1; }
+  .seg { display: flex; border: 1px solid var(--line); }
+  .seg button { padding: 5px 10px; color: var(--mute); font-size: 12px; }
+  .seg button.on { background: var(--ink); color: var(--bg); }
+  .grid { display: grid; grid-template-columns: 1fr 340px; }
+  .chart { position: relative; height: 440px; border-right: 1px solid var(--line); }
+  .chart canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .panel { padding: 18px; display: flex; flex-direction: column; gap: 18px; font-size: 13px; }
+  .lbl { display: flex; justify-content: space-between; color: var(--mute); }
+  .lbl b { color: var(--ink); font-size: 15px; }
+  input[type=range] { width: 100%; accent-color: var(--ink); margin-top: 8px; }
+  .hint { color: var(--mute); font-size: 12px; margin-top: 4px; }
+  .rows div { display: flex; justify-content: space-between; padding: 5px 0; border-top: 1px solid var(--line); }
+  .rows div span { color: var(--mute); }
+  .big { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--line); }
+  .big div { padding: 10px; }
+  .big div + div { border-left: 1px solid var(--line); }
+  .big small { display: block; color: var(--mute); font-size: 11px; }
+  .big b { font-size: 22px; }
+  .arm { padding: 13px; background: var(--ink); color: var(--bg); letter-spacing: .2em; opacity: .35; cursor: not-allowed; }
+  .soon { text-align: center; color: var(--mute); font-size: 11px; margin-top: -10px; }
+  .neg { color: var(--red); }
+  .log { border-top: 1px solid var(--line); }
+  .tabs { display: flex; gap: 18px; padding: 0 18px; border-bottom: 1px solid var(--line); font-size: 13px; }
+  .tabs span { padding: 10px 0; border-bottom: 2px solid var(--ink); }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th { text-align: left; color: var(--mute); font-weight: 400; padding: 8px 18px; }
+  td { padding: 8px 18px; border-top: 1px solid var(--line); white-space: nowrap; }
+  .tw { max-height: 260px; overflow: auto; }
+  footer { padding: 16px 18px 40px; font-size: 11px; color: var(--mute); border-top: 1px solid var(--line); }
+
+  @media (max-width: 860px) {
+    .grid { grid-template-columns: 1fr; }
+    .chart { height: 300px; border-right: 0; border-bottom: 1px solid var(--line); }
+    .shot .bar span.hide { display: none; }
+    .shot .foot div { padding: 6px 7px; font-size: 10px; white-space: nowrap; }
+  }
+</style>
+</head>
+<body>
+
+<section class="land">
+  <canvas id="ascii"></canvas>
+  <div class="tick" id="tick"><span>loading…</span></div>
+  <div class="center">
+    <div class="shot">
+      <div class="bar"><b>bunker_</b><span><i class="live-dot"></i>SOL <b id="sPx">—</b> <span id="sChg"></span></span><span class="sp"></span><span class="hide" id="sStatus">—</span><div class="tg" id="tg"><button data-m="live" class="on">live</button><button data-m="90d">90d rule</button></div></div>
+      <canvas id="mini"></canvas>
+      <div class="foot"><div>hold 90d<b class="neg" id="sHold">—</b></div><div>bunker 90d<b id="sBunk">—</b></div><div>in usdc<b id="sDays">—</b></div></div>
+    </div>
+
+    <div class="word">bunker<i></i></div>
+    <div class="lines">
+      <div>sol dumps → you're in usdc</div>
+      <div>sol bounces → you're back in</div>
+      <div>0 custody, your keys</div>
+      <div>one rule, fully onchain on solana</div>
+    </div>
+    <div class="btns">
+      <a class="btn main" href="https://pump.fun/coin/BNKRB8a4Pmyf89TKo5dAaxBnPbk7T4bQJ73WMHXmvw2y" target="_blank" rel="noopener" id="buy">[ BUY ]</a>
+      <a class="btn" href="#app">[ APP ]</a>
+      <a class="btn" href="storm.html">[ STORM ]</a>
+      <a class="btn" href="docs.html">[ DOCS ]</a>
+      <a class="btn" href="#" id="xlink">[ X ]</a>
+    </div>
+    <div class="ca" id="ca">ca: soon</div>
+  </div>
+</section>
+
+<section class="app" id="app">
+  <div class="ahead">
+    <b>bunker_ app</b><span>demo · past prices</span>
+    <span class="px" id="px">—</span><span id="chg">—</span>
+    <span>30d high <b id="hi">—</b></span><span>from top <b id="dd">—</b></span>
+    <span class="sp"></span>
+    <div class="seg" id="period"><button data-d="30">30d</button><button data-d="90" class="on">90d</button><button data-d="180">180d</button><button data-d="365">1y</button></div>
+  </div>
+  <div class="grid">
+    <div class="chart"><canvas id="chart"></canvas></div>
+    <div class="panel">
+      <div>
+        <div class="lbl"><span>hide when sol falls from top</span><b id="xOut">12%</b></div>
+        <input id="x" type="range" min="3" max="40" value="12">
+        <div class="hint" id="trig">—</div>
+      </div>
+      <div>
+        <div class="lbl"><span>come back after a bounce</span><b id="yOut">8%</b></div>
+        <input id="y" type="range" min="2" max="40" value="8">
+      </div>
+      <div class="big">
+        <div><small>$1,000 holding</small><b id="rHold">—</b></div>
+        <div><small>$1,000 bunker_</small><b id="rBunk">—</b></div>
+      </div>
+      <div class="rows">
+        <div><span>worst drop holding</span><b class="neg" id="rDDh">—</b></div>
+        <div><span>worst drop bunker_</span><b id="rDDb">—</b></div>
+        <div><span>exits to usdc</span><b id="rTrades">—</b></div>
+        <div><span>days in usdc</span><b id="rDays">—</b></div>
+      </div>
+      <button class="arm" disabled>ARM BUNKER</button>
+      <div class="soon">wallet orders go live after launch</div>
+    </div>
+  </div>
+  <div class="log">
+    <div class="tabs"><span>trigger log</span></div>
+    <div class="tw"><table><thead><tr><th>time</th><th>event</th><th>sol price</th><th>bag value</th></tr></thead><tbody id="logBody"></tbody></table></div>
+  </div>
+</section>
+
+<footer>bunker_ is a meme token and an experimental tool. the app above replays past prices; it is not a promise. prices can gap through a trigger, and in choppy markets a rule can sell low and buy back higher. not financial advice.</footer>
+
+<script>
+const CA = 'BNKRB8a4Pmyf89TKo5dAaxBnPbk7T4bQJ73WMHXmvw2y';
+const API = 'https://data-api.binance.vision/api/v3';
+const $ = (id) => document.getElementById(id);
+const usd = (n, d = 2) => '$' + n.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
+const pc = (n) => (n > 0 ? '+' : '') + n.toFixed(1) + '%';
+const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+if (CA) $('ca').textContent = 'ca: ' + CA;
+$('ca').onclick = async () => { if (!CA) return; try { await navigator.clipboard.writeText(CA); $('ca').textContent = 'copied'; setTimeout(() => ($('ca').textContent = 'ca: ' + CA), 1200); } catch {} };
+
+// ---------- simulation ----------
+function simulate(c, x, y) {
+  const FEE = 0.003, start = 1000;
+  let sol = start / c[0].c, cash = 0, inSol = true, peak = c[0].c, trough = 0, trades = 0, hid = 0;
+  const hold = [], bunk = [], hidden = [], log = [];
+  let hp = 0, hdd = 0, bp = 0, bdd = 0;
+  for (const { t, c: p } of c) {
+    if (inSol) {
+      peak = Math.max(peak, p);
+      if (p <= peak * (1 - x / 100)) { cash = sol * p * (1 - FEE); sol = 0; inSol = false; trough = p; trades++; log.push({ t, ev: `sol −${x}% from top → usdc`, p, v: cash }); }
+    } else {
+      trough = Math.min(trough, p);
+      if (p >= trough * (1 + y / 100)) { sol = cash / p * (1 - FEE); cash = 0; inSol = true; peak = p; log.push({ t, ev: `bounce +${y}% → back in sol`, p, v: sol * p }); }
+    }
+    const h = start / c[0].c * p, b = inSol ? sol * p : cash;
+    hold.push(h); bunk.push(b); hidden.push(!inSol); if (!inSol) hid++;
+    hp = Math.max(hp, h); hdd = Math.min(hdd, h / hp - 1); bp = Math.max(bp, b); bdd = Math.min(bdd, b / bp - 1);
+  }
+  return { hold, bunk, hidden, trades, hdd, bdd, days: hid / 6, log };
+}
+const kl = (d) => fetch(`${API}/klines?symbol=SOLUSDT&interval=4h&limit=${Math.min(1000, d * 6)}`).then((r) => r.json()).then((k) => k.map((x) => ({ t: x[0], c: +x[4] })));
+
+function plot(cv, r, { pad = [8, 8, 8, 8], labels = false, w1 = 1.5, w2 = 2.2 } = {}) {
+  const dpr = devicePixelRatio || 1, W = cv.clientWidth, H = cv.clientHeight;
+  cv.width = W * dpr; cv.height = H * dpr;
+  const g = cv.getContext('2d'); g.scale(dpr, dpr);
+  const [pt, pr, pb, pl] = pad;
+  const all = r.hold.concat(r.bunk), lo = Math.min(...all) * .97, hi = Math.max(...all) * 1.03;
+  const X = (i) => pl + i / (r.hold.length - 1) * (W - pl - pr), Y = (v) => pt + (1 - (v - lo) / (hi - lo)) * (H - pt - pb);
+  g.fillStyle = 'rgba(21,21,21,.06)';
+  r.hidden.forEach((on, i) => { if (on) g.fillRect(X(i), pt, X(1) - X(0) + .6, H - pt - pb); });
+  if (labels) {
+    g.font = '11px JetBrains Mono'; g.fillStyle = css('--mute'); g.strokeStyle = css('--line'); g.lineWidth = 1;
+    for (let i = 0; i <= 4; i++) { const v = lo + (hi - lo) * i / 4, yy = Y(v); g.beginPath(); g.moveTo(pl, yy); g.lineTo(W - pr, yy); g.stroke(); g.fillText('$' + Math.round(v), W - pr + 6, yy + 4); }
+  }
+  g.setLineDash([3, 3]); g.strokeStyle = css('--mute'); g.lineWidth = 1; g.beginPath(); g.moveTo(pl, Y(1000)); g.lineTo(W - pr, Y(1000)); g.stroke(); g.setLineDash([]);
+  const line = (a, c, w) => { g.strokeStyle = c; g.lineWidth = w; g.beginPath(); a.forEach((v, i) => (i ? g.lineTo(X(i), Y(v)) : g.moveTo(X(i), Y(v)))); g.stroke(); };
+  line(r.hold, css('--red'), w1);
+  line(r.bunk, css('--ink'), w2);
+  return { X, Y };
+}
+
+// ---------- ascii background: the 90d SOL chart drawn in characters ----------
+let bgPrices = [];
+function ascii() {
+  const cv = $('ascii'), dpr = devicePixelRatio || 1, W = cv.clientWidth, H = cv.clientHeight;
+  cv.width = W * dpr; cv.height = H * dpr;
+  const g = cv.getContext('2d'); g.scale(dpr, dpr);
+  const cw = 9, ch = 14, cols = Math.ceil(W / cw), rows = Math.ceil(H / ch);
+  g.font = '12px JetBrains Mono'; g.fillStyle = css('--ascii');
+  const lo = Math.min(...bgPrices), hi = Math.max(...bgPrices);
+  const t = performance.now() / 1000;
+  for (let cx = 0; cx < cols; cx++) {
+    const p = bgPrices.length ? bgPrices[Math.floor(cx / cols * bgPrices.length)] : 0;
+    const top = bgPrices.length ? Math.floor(rows * (.15 + .7 * (1 - (p - lo) / (hi - lo)))) : rows;
+    for (let cy = 0; cy < rows; cy++) {
+      let c;
+      if (cy < top) { const n = Math.sin(cx * .37 + cy * .23 + t * .6) + Math.sin(cx * .11 - cy * .41); c = n > 1.2 ? '+' : n > .4 ? '.' : ''; }
+      else c = cy === top ? '=' : (cx + cy) % 3 === 0 ? '#' : (cx * 7 + cy) % 5 === 0 ? 'x' : '#';
+      if (c) g.fillText(c, cx * cw, cy * ch + 11);
+    }
+  }
+}
+let lastA = 0;
+(function loop(now) { if (now - lastA > 120) { lastA = now; ascii(); } requestAnimationFrame(loop); })(0);
+
+// ---------- live prices ----------
+let LP = 0, HI = 0;
+function trigText() {
+  if (!HI) return;
+  const trig = HI * (1 - +$('x').value / 100);
+  $('trig').textContent = LP <= trig ? `would have fired at ${usd(trig)} · today you'd be in usdc` : `fires at ${usd(trig)} · sol now ${usd(LP)}`;
+}
+async function live() {
+  try {
+    const syms = ['SOLUSDT', 'BTCUSDT', 'ETHUSDT', 'BONKUSDT', 'JUPUSDT'];
+    const all = await fetch(`${API}/ticker/24hr?symbols=${encodeURIComponent(JSON.stringify(syms))}`).then((r) => r.json());
+    const d30 = await fetch(`${API}/klines?symbol=SOLUSDT&interval=1d&limit=30`).then((r) => r.json());
+    const s = all.find((x) => x.symbol === 'SOLUSDT'), p = +s.lastPrice, c = +s.priceChangePercent, hi = Math.max(...d30.map((x) => +x[2]));
+    const item = all.map((x) => `${x.symbol.replace('USDT', '')} ${(+x.lastPrice).toPrecision(5)} ${pc(+x.priceChangePercent)}`).join('      ');
+    $('tick').firstElementChild.textContent = (item + '      ').repeat(6);
+    $('sPx').textContent = usd(p); $('px').textContent = usd(p);
+    $('chg').textContent = pc(c) + ' 24h'; $('chg').className = c < 0 ? 'neg' : '';
+    $('hi').textContent = usd(hi); $('dd').textContent = pc((p / hi - 1) * 100); $('dd').className = 'neg';
+    LP = p; HI = hi; trigText();
+  } catch {}
+}
+live(); setInterval(live, 30000);
+
+// ---------- real time: SOL trades stream ----------
+const WINDOW = 5 * 60 * 1000;                        // live chart shows the last 5 minutes
+let ticks = [], c90 = [], mode = 'live', open24 = 0;
+// smooth live chart: the head glides to each new price, the axis eases, the line is drawn as a curve
+const view = { lo: 0, hi: 0, head: 0, label: 0 };
+function curve(g, pts) {
+  g.moveTo(pts[0][0], pts[0][1]);
+  for (let i = 1; i < pts.length - 1; i++) {
+    const mx = (pts[i][0] + pts[i + 1][0]) / 2, my = (pts[i][1] + pts[i + 1][1]) / 2;
+    g.quadraticCurveTo(pts[i][0], pts[i][1], mx, my);
+  }
+  const l = pts.at(-1); g.lineTo(l[0], l[1]);
+}
+// bucket ticks into steps and average neighbours, so 1-cent jumps become a soft curve
+function smooth(arr, step) {
+  const b = []; let cur = null;
+  for (const [t, p] of arr) {
+    const k = Math.floor(t / step);
+    if (!cur || cur.k !== k) { cur = { k, t: k * step + step / 2, s: 0, n: 0 }; b.push(cur); }
+    cur.s += p; cur.n++;
+  }
+  const raw = b.map((x) => [x.t, x.s / x.n]);
+  return raw.map(([t], i) => { let s = 0, n = 0; for (let j = Math.max(0, i - 2); j <= Math.min(raw.length - 1, i + 2); j++) { s += raw[j][1]; n++; } return [t, s / n]; });
+}
+function liveDraw() {
+  const cv = $('mini'), dpr = devicePixelRatio || 1, W = cv.clientWidth, H = cv.clientHeight;
+  if (cv.width !== W * dpr || cv.height !== H * dpr) { cv.width = W * dpr; cv.height = H * dpr; }
+  const g = cv.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
+  if (ticks.length < 2) return;
+  const now = Date.now(), t0 = now - WINDOW, pr = 62, pt = 14, pb = 20;
+  // ease the head price and the y range toward their targets every frame
+  const target = ticks.at(-1)[1];
+  view.head = view.head ? view.head + (target - view.head) * 0.12 : target;
+  let lo = Infinity, hi = -Infinity; for (const [, p] of ticks) { lo = Math.min(lo, p); hi = Math.max(hi, p); }
+  const sp = (hi - lo) || hi * .001; lo -= sp * .18; hi += sp * .18;
+  view.lo = view.lo ? view.lo + (lo - view.lo) * 0.06 : lo;
+  view.hi = view.hi ? view.hi + (hi - view.hi) * 0.06 : hi;
+  const X = (t) => (t - t0) / WINDOW * (W - pr), Y = (p) => pt + (1 - (p - view.lo) / (view.hi - view.lo)) * (H - pt - pb);
+  // grid
+  g.font = '10px JetBrains Mono'; g.lineWidth = 1;
+  for (let i = 0; i <= 3; i++) {
+    const p = view.lo + (view.hi - view.lo) * i / 3, y = Y(p);
+    g.strokeStyle = 'rgba(21,21,21,.07)'; g.beginPath(); g.moveTo(0, y); g.lineTo(W - pr, y); g.stroke();
+    g.fillStyle = css('--mute'); g.fillText(p.toFixed(2), W - pr + 8, y + 3);
+  }
+  for (let m = 0; m <= 5; m += 1) {
+    const t = Math.floor((now - m * 60000) / 60000) * 60000, x = X(t);
+    g.fillStyle = css('--mute'); g.fillText(new Date(t).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }), x - 14, H - 5);
+  }
+  // points: every tick, plus the gliding head pinned to "now"
+  const pts = smooth(ticks, 2000).map(([t, p]) => [X(t), Y(p)]);
+  const hx = X(now), hy = Y(view.head);
+  pts.push([hx, hy]);
+  // area
+  const grad = g.createLinearGradient(0, pt, 0, H - pb);
+  grad.addColorStop(0, 'rgba(21,21,21,.13)'); grad.addColorStop(1, 'rgba(21,21,21,0)');
+  g.beginPath(); curve(g, pts); g.lineTo(hx, H - pb); g.lineTo(pts[0][0], H - pb); g.closePath(); g.fillStyle = grad; g.fill();
+  // line
+  g.beginPath(); curve(g, pts); g.strokeStyle = css('--ink'); g.lineWidth = 1.6; g.lineJoin = 'round'; g.lineCap = 'round'; g.stroke();
+  // dashed guide from head to the price tag
+  g.setLineDash([2, 3]); g.strokeStyle = 'rgba(194,54,31,.55)'; g.beginPath(); g.moveTo(hx, hy); g.lineTo(W - pr, hy); g.stroke(); g.setLineDash([]);
+  // head: pulsing ring
+  const k = (now % 1600) / 1600;
+  g.strokeStyle = `rgba(194,54,31,${0.5 * (1 - k)})`; g.lineWidth = 1.5; g.beginPath(); g.arc(hx, hy, 3 + k * 11, 0, 7); g.stroke();
+  g.fillStyle = css('--red'); g.beginPath(); g.arc(hx, hy, 3.2, 0, 7); g.fill();
+  // price tag, rolling number
+  view.label = view.label ? view.label + (target - view.label) * 0.2 : target;
+  g.fillStyle = css('--ink'); g.fillRect(W - pr + 2, hy - 9, pr - 4, 18);
+  g.fillStyle = css('--bg'); g.font = '600 11px JetBrains Mono'; g.fillText(view.label.toFixed(2), W - pr + 8, hy + 4);
+}
+function shot90() {
+  if (!c90.length) return;
+  const r = simulate(c90, 12, 8);
+  $('sHold').textContent = pc((r.hold.at(-1) / 1000 - 1) * 100);
+  $('sBunk').textContent = pc((r.bunk.at(-1) / 1000 - 1) * 100);
+  $('sDays').textContent = Math.round(r.days) + 'd';
+  $('sStatus').textContent = r.hidden.at(-1) ? '● rule: in usdc' : '● rule: armed';
+  if (mode === '90d') plot($('mini'), r, { pad: [10, 10, 10, 10] });
+}
+// push the live price into the last 4h candle (or start a new one)
+function feed(arr, t, p) {
+  if (!arr.length) return;
+  const last = arr.at(-1);
+  if (t - last.t < 4 * 3600 * 1000) last.c = p; else { arr.push({ t: last.t + 4 * 3600 * 1000, c: p }); arr.shift(); }
+}
+let prevP = 0;
+function onPrice(t, p) {
+  if (ticks.length && t - ticks.at(-1)[0] < 500) ticks[ticks.length - 1] = [t, p]; else ticks.push([t, p]);
+  while (ticks.length && ticks[0][0] < t - WINDOW) ticks.shift();
+  LP = p;
+  for (const id of ['sPx', 'px']) { const el = $(id); el.textContent = usd(p); el.className = p > prevP ? 'up' : p < prevP ? 'neg' : ''; }
+  if (open24) { const c = (p / open24 - 1) * 100; $('sChg').textContent = pc(c); $('sChg').className = c < 0 ? 'neg' : 'up'; $('chg').textContent = pc(c) + ' 24h'; $('chg').className = c < 0 ? 'neg' : 'up'; }
+  if (HI) { $('dd').textContent = pc((p / HI - 1) * 100); }
+  prevP = p;
+  feed(c90, t, p); feed(candles, t, p);
+}
+async function startLive() {
+  try {
+    const [k, d] = await Promise.all([
+      fetch(`${API}/klines?symbol=SOLUSDT&interval=1s&limit=600`).then((r) => r.json()),
+      fetch(`${API}/ticker/24hr?symbol=SOLUSDT`).then((r) => r.json()),
+    ]);
+    ticks = k.map((x) => [x[6], +x[4]]); open24 = +d.openPrice;
+  } catch {}
+  const connect = () => {
+    const ws = new WebSocket('wss://data-stream.binance.vision/ws/solusdt@aggTrade');
+    ws.onmessage = (e) => { const m = JSON.parse(e.data); onPrice(m.T, +m.p); };
+    ws.onclose = () => setTimeout(connect, 2000);
+  };
+  connect();
+}
+startLive();
+(function frame() { if (mode === 'live') liveDraw(); requestAnimationFrame(frame); })();
+setInterval(() => { shot90(); if (candles.length) run(); }, 2000);   // re-run the rule on the newest price
+
+$('tg').onclick = (e) => {
+  const m = e.target.dataset.m; if (!m) return; mode = m;
+  for (const b of $('tg').children) b.classList.toggle('on', b === e.target);
+  shot90();
+};
+kl(90).then((c) => { c90 = c; bgPrices = c.map((x) => x.c); shot90(); });
+addEventListener('resize', shot90);
+
+// ---------- app ----------
+let candles = [];
+async function load(d) { candles = await kl(d); run(); }
+function run() {
+  const x = +$('x').value, y = +$('y').value;
+  $('xOut').textContent = x + '%'; $('yOut').textContent = y + '%';
+  if (!candles.length) return;
+  const r = simulate(candles, x, y), h = r.hold.at(-1), b = r.bunk.at(-1);
+  $('rHold').textContent = usd(h, 0); $('rHold').className = h < 1000 ? 'neg' : '';
+  $('rBunk').textContent = usd(b, 0); $('rBunk').className = b < 1000 ? 'neg' : '';
+  $('rDDh').textContent = (r.hdd * 100).toFixed(1) + '%';
+  $('rDDb').textContent = (r.bdd * 100).toFixed(1) + '%';
+  $('rTrades').textContent = r.trades; $('rDays').textContent = Math.round(r.days);
+  plot($('chart'), r, { pad: [16, 62, 16, 12], labels: true });
+  const fmt = (t) => new Date(t).toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+  $('logBody').innerHTML = r.log.slice().reverse().map((e) => `<tr><td>${fmt(e.t)}</td><td>${e.ev}</td><td>${usd(e.p)}</td><td>${usd(e.v, 0)}</td></tr>`).join('') || '<tr><td colspan="4" style="color:var(--mute)">no triggers in this period</td></tr>';
+  trigText();
+}
+$('x').oninput = run; $('y').oninput = run;
+$('period').onclick = (e) => { const d = e.target.dataset.d; if (!d) return; for (const b of $('period').children) b.classList.toggle('on', b === e.target); load(+d); };
+addEventListener('resize', run);
+load(90);
+</script>
+</body>
+</html>

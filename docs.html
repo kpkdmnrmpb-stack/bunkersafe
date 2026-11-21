@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="icon" href="favicon.png">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>bunker_ / docs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter+Tight:wght@800&display=swap" rel="stylesheet">
+<style>
+  :root { --bg: #ebe5d8; --ink: #151515; --mute: #8b8474; --line: #d3cbb9; --red: #c2361f; }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { background: var(--bg); color: var(--ink); }
+  body { font: 15px/1.7 'JetBrains Mono', ui-monospace, monospace; }
+  a { color: inherit; text-decoration: none; }
+  nav { display: flex; align-items: center; gap: 18px; padding: 14px 18px; border-bottom: 1px solid var(--line); font-size: 13px; }
+  nav .logo { font: 800 22px 'Inter Tight'; letter-spacing: -.05em; }
+  nav .logo i { display: inline-block; width: .42em; height: .1em; background: var(--red); margin-left: .04em; }
+  nav a.l { color: var(--mute); } nav a.l:hover, nav a.on { color: var(--ink); }
+  nav .sp { flex: 1; }
+  .wrap { display: grid; grid-template-columns: 220px 1fr; max-width: 1100px; margin: 0 auto; }
+  aside { position: sticky; top: 0; align-self: start; padding: 40px 18px; font-size: 13px; }
+  aside a { display: block; color: var(--mute); padding: 3px 0; }
+  aside a:hover { color: var(--ink); }
+  main { padding: 40px 24px 80px; border-left: 1px solid var(--line); max-width: 760px; }
+  h1 { font: 800 clamp(44px, 6vw, 72px)/1 'Inter Tight'; letter-spacing: -.05em; margin-bottom: 20px; }
+  h2 { font: 800 28px/1.1 'Inter Tight'; letter-spacing: -.03em; margin: 54px 0 14px; padding-top: 18px; border-top: 1px solid var(--line); }
+  h2 span { color: var(--red); }
+  p { margin: 10px 0; }
+  .m { color: var(--mute); }
+  pre { background: #f3efe6; border: 1px solid var(--line); padding: 14px 16px; margin: 14px 0; font: 13px/1.6 'JetBrains Mono'; white-space: pre-wrap; }
+  ul { padding-left: 0; list-style: none; }
+  li { padding: 6px 0; border-top: 1px solid var(--line); }
+  li::before { content: '_ '; color: var(--red); font-weight: 700; }
+  details { border-top: 1px solid var(--line); padding: 10px 0; }
+  summary { cursor: pointer; font-weight: 700; }
+  @media (max-width: 760px) { .wrap { grid-template-columns: 1fr; } aside { display: none; } main { border-left: 0; } }
+</style>
+</head>
+<body>
+<nav>
+  <a class="logo" href="index.html">bunker<i></i></a>
+  <a class="l" href="index.html#app">app</a><a class="l" href="storm.html">storm</a><a class="l on" href="docs.html">docs</a>
+  <span class="sp"></span><a class="l" href="https://pump.fun/coin/BNKRB8a4Pmyf89TKo5dAaxBnPbk7T4bQJ73WMHXmvw2y" target="_blank" rel="noopener">[ buy ]</a>
+</nav>
+<div class="wrap">
+  <aside>
+    <a href="#what">what is bunker_</a>
+    <a href="#rule">the rule</a>
+    <a href="#keys">your keys</a>
+    <a href="#usdc">why usdc</a>
+    <a href="#token">the token</a>
+    <a href="#now">what works today</a>
+    <a href="#risk">risks</a>
+    <a href="#faq">faq</a>
+  </aside>
+  <main>
+    <h1>docs</h1>
+    <p class="m">everything bunker_ does, in plain words. no roadmap fluff.</p>
+
+    <h2 id="what"><span>01</span> what is bunker_</h2>
+    <p>a panic button for solana. you set one rule. when sol crashes, your sol is swapped to usdc. when it bounces, it's swapped back. you don't have to watch the chart.</p>
+
+    <h2 id="rule"><span>02</span> the rule</h2>
+    <p>two numbers, that's all:</p>
+<pre>hide   = how far sol may fall from its top before you leave   (e.g. 12%)
+return = how big a bounce from the bottom brings you back     (e.g. 8%)
+
+sol in wallet ──(sol −12% from top)──▶ usdc
+usdc          ──(sol +8% from bottom)─▶ sol</pre>
+    <p class="m">the top keeps moving up while you hold, so the exit follows the price up. the bottom keeps moving down while you're out, so you only come back after a real bounce.</p>
+
+    <h2 id="keys"><span>03</span> your keys</h2>
+    <ul>
+      <li>orders are placed from your own wallet. bunker_ never holds your funds.</li>
+      <li>every order is visible on-chain. you can cancel it any time.</li>
+      <li>no deposits, no vault, nothing to withdraw.</li>
+    </ul>
+
+    <h2 id="usdc"><span>04</span> why usdc</h2>
+    <p>the bunker is a regulated dollar stablecoin, not a coin we print. a protection tool that invents its own "stable" money is just another risk.</p>
+
+    <h2 id="token"><span>05</span> the token</h2>
+    <p>bunker_ is a meme token on solana. holders use the tool free; everyone else pays a small fee per trigger.</p>
+    <p class="m">contract address: <b style="word-break:break-all">BNKRB8a4Pmyf89TKo5dAaxBnPbk7T4bQJ73WMHXmvw2y</b> · <a href="https://pump.fun/coin/BNKRB8a4Pmyf89TKo5dAaxBnPbk7T4bQJ73WMHXmvw2y" target="_blank" rel="noopener" style="text-decoration:underline">buy on pump.fun</a></p>
+
+    <h2 id="now"><span>06</span> what works today</h2>
+    <ul>
+      <li>live: the app replays the rule on real sol prices, updated every second.</li>
+      <li>live: storm radar with live prices for sol, btc, eth, jup, bonk, wif.</li>
+      <li>next: wallet connection and on-chain trigger orders.</li>
+    </ul>
+
+    <h2 id="risk"><span>07</span> risks</h2>
+    <ul>
+      <li>gaps: in a fast crash the price can jump past your trigger, so you exit lower than planned.</li>
+      <li>chop: in a sideways market the rule can sell low and buy back higher, again and again.</li>
+      <li>usdc: a stablecoin carries issuer risk.</li>
+      <li>the token: meme tokens are volatile. only use what you can afford to lose.</li>
+    </ul>
+    <p class="m">nothing here is financial advice. past prices don't predict the future.</p>
+
+    <h2 id="faq"><span>08</span> faq</h2>
+    <details><summary>do i need to keep the site open?</summary><p>no. once orders are on-chain they fire on their own.</p></details>
+    <details><summary>can bunker_ take my sol?</summary><p>no. the orders come from your wallet and only swap between sol and usdc in that wallet.</p></details>
+    <details><summary>what numbers should i pick?</summary><p>try them in the app on past prices. tighter rules exit sooner but trade more often.</p></details>
+    <details><summary>which wallets?</summary><p>phantom, solflare, backpack, any standard solana wallet.</p></details>
+  </main>
+</div>
+</body>
+</html>
