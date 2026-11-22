@@ -4,7 +4,9 @@
 <meta charset="utf-8">
 <meta property="og:title" content="bunker_ · the panic button for solana">
 <meta property="og:description" content="sol dumps, you're in usdc. sol bounces, you're back in. one rule, your keys.">
-<meta name="twitter:card" content="summary">
+<meta name="twitter:card" content="summary_large_image">
+<meta property="og:image" content="https://bunkersafe.xyz/og.png">
+<meta name="twitter:image" content="https://bunkersafe.xyz/og.png">
 <meta name="twitter:site" content="@USEBUNKER_">
 <link rel="icon" href="favicon.png">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -38,6 +40,7 @@
   .shot .foot b { color: var(--ink); margin-left: 4px; }
 
   .word { font: 800 clamp(64px, 11vw, 132px)/1 'Inter Tight', sans-serif; letter-spacing: -.055em; margin-top: 40px; position: relative; }
+  .word .mk { height: .74em; width: auto; margin-right: .2em; vertical-align: -.02em; }
   .word i { display: inline-block; width: .42em; height: .1em; margin-left: .04em; background: var(--red); vertical-align: baseline; animation: blink 1.1s steps(1) infinite; }
   @keyframes blink { 50% { opacity: 0; } }
   .lines { margin-top: 26px; font-size: clamp(15px, 1.6vw, 18px); line-height: 1.7; }
@@ -114,7 +117,7 @@
       <div class="foot"><div>hold 90d<b class="neg" id="sHold">—</b></div><div>bunker 90d<b id="sBunk">—</b></div><div>in usdc<b id="sDays">—</b></div></div>
     </div>
 
-    <div class="word">bunker<i></i></div>
+    <div class="word"><svg class="mk" viewBox="0 0 520 529" aria-hidden="true"><path d="M0 529V260A260 260 0 0 1 520 260V529H419V260A159 159 0 0 0 101 260V529Z" fill="currentColor"/><rect x="159" y="437" width="202" height="67" fill="#c2361f"/></svg>bunker<i></i></div>
     <div class="lines">
       <div>sol dumps → you're in usdc</div>
       <div>sol bounces → you're back in</div>
